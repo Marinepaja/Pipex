@@ -6,7 +6,7 @@
 /*   By: mlaporte <mlaporte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 12:48:05 by mlaporte          #+#    #+#             */
-/*   Updated: 2024/02/27 15:36:10 by mlaporte         ###   ########.fr       */
+/*   Updated: 2024/02/27 20:19:25 by mlaporte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,11 +124,14 @@ int	exec_cmd(char *cmd, char **env, char *path)
 	if (!tab)
 		return (-1);
 	str = NULL;
-	if (access(cmd, F_OK | X_OK) == 0)
+	if (!*cmd)
+		return (print_msg(-1, str, cmd, tab));
+	else if (access(cmd, F_OK | X_OK) == 0)
 		execve(cmd, tab, env);
 	if (access(cmd, F_OK | X_OK) == 0)
 		return (print_msg(1, str, cmd, tab));
 	//i = check_cmd(cmd);		
+
 	if (ft_strchr(cmd, '/'))
 		return (print_msg(2, str, cmd, tab));
 	/*if (i)
