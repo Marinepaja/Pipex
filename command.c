@@ -6,7 +6,7 @@
 /*   By: mlaporte <mlaporte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 12:48:05 by mlaporte          #+#    #+#             */
-/*   Updated: 2024/02/27 20:19:25 by mlaporte         ###   ########.fr       */
+/*   Updated: 2024/03/24 10:58:31 by mlaporte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,56 +37,58 @@ char	*get_path(char *cmd, char **env)
 	char	*full_path;
 
 	i = 0;
-
 	path_tab = ft_split(ft_getenv(env), ':'); 
 	if (!path_tab)
 		return (NULL);
 	cmd_tab = ft_split(cmd, ' '); 
 	if (!cmd_tab)
 		return (NULL);
-	
-	while (path_tab[i]) // ok mais avant il faudra verifier qu on t a pas directement envoyer le chemin + la cmd dans l argument par ex : /usr/bin/ls au lieu de ls -> utiliser access pour faire ca
+	while (path_tab[i])
 	{
-		path = ft_strjoin(path_tab[i], "/"); // retour strjoin si malloc ko non protege 
-		full_path = ft_strjoin(path, cmd_tab[0]); // retour strjoin si malloc ko non protege
+		path = ft_strjoin(path_tab[i], "/");
+		if (!path)
+			return (NULL);
+		full_path = ft_strjoin(path, cmd_tab[0]);
+		if (!full_path)
+			return (NULL);
 		if (access(full_path, F_OK | X_OK) == 0)
 		{
-			free(path_tab); // attention : ici tu free le char **, mais un split te retourne un char** avec a l interieur des char * qui eux aussi doivent etre free 
-			free_tab(cmd_tab); // idem
+			free(path_tab);
+			free_tab(cmd_tab);
 			return (full_path);
 		}
-		free(full_path);
 		i++;
+		free(full_path);
 	}
-	free(path_tab); // idem que pour les free du dessus
-	free_tab(cmd_tab); // idem
+	free(path_tab);
+	free_tab(cmd_tab);
 	return (NULL);
 }
 
-int	check_cmd(char *cmd)
+/*int	check_cmd(char *cmd)
 {
 	//size_t		i;
 
 	//i = 0;
 	if (!cmd)
 		return (-1);
-	/*while (cmd[i] && cmd[i] == '/')
+	while (cmd[i] && cmd[i] == '/')
 		i++;
 	//dprintf (2, "%ld, %s\n", i, cmd);
 	if (i == ft_strlen(cmd))
 		return (1);
 	else if (cmd[ft_strlen(cmd) - 1] == '/')
 		return (1);
-	else*/ if (ft_strchr(cmd, '/'))
+	if (ft_strchr(cmd, '/'))
 		return (2);
 
-	/*while (cmd[i] && ((cmd[i] >= 9 && cmd[i] <= 13) || cmd[i] == ' '))
+	while (cmd[i] && ((cmd[i] >= 9 && cmd[i] <= 13) || cmd[i] == ' '))
 		i++;
-	if (i == ft_strlen(cmd))*/
+	if (i == ft_strlen(cmd))
 		return (0);
 	
 	//return (i);
-}
+}*/
 
 int	print_msg(int i, char *str, char *cmd, char **tab)
 {

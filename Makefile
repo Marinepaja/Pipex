@@ -1,3 +1,5 @@
+NAME = pipex
+
 OBJS = ${SRCS:.c=.o}
 
 SRC_DIR = ./
@@ -12,15 +14,13 @@ OBJ = $(SRC:.c=.o)
 
 OBJS = $(addprefix $(OBJ_DIR), $(OBJ))
 
-CC = cc
+CC = clang
 
 CFLAGS = -Wall -Wextra -Werror
 
 LIBFTDIR = ./libft
 
 LIBFT = $(LIBFTDIR)/libft.a
-
-NAME = pipex
 
 all: $(NAME) pipex.h
 
