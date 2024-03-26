@@ -6,7 +6,7 @@
 /*   By: mlaporte <mlaporte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 12:48:05 by mlaporte          #+#    #+#             */
-/*   Updated: 2024/03/24 10:58:31 by mlaporte         ###   ########.fr       */
+/*   Updated: 2024/03/24 13:05:05 by mlaporte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,34 @@ char	*ft_getenv(char **env)
 	return (NULL);
 }
 
+char	*get_full_path(char *path_tab, char *cmd)
+{
+	char	*path;
+
+	path = ft_strjoin(path_tab, "/");
+	if (!path)
+		return (NULL);
+	path = ft_strjoin(path, cmd);
+	if (path)
+		return (path);
+	return (NULL);
+}
+
 char	*get_path(char *cmd, char **env)
 {
 	char	**path_tab;
 	char	**cmd_tab;
 	int		i;
-	char	*path;
 	char	*full_path;
 
 	i = 0;
-	path_tab = ft_split(ft_getenv(env), ':'); 
-	if (!path_tab)
-		return (NULL);
-	cmd_tab = ft_split(cmd, ' '); 
-	if (!cmd_tab)
+	path_tab = ft_split(ft_getenv(env), ':');
+	cmd_tab = ft_split(cmd, ' ');
+	if (!path_tab || !cmd_tab)
 		return (NULL);
 	while (path_tab[i])
 	{
-		path = ft_strjoin(path_tab[i], "/");
-		if (!path)
-			return (NULL);
-		full_path = ft_strjoin(path, cmd_tab[0]);
-		if (!full_path)
-			return (NULL);
+		full_path = get_full_path(path_tab[i], cmd_tab[0]);
 		if (access(full_path, F_OK | X_OK) == 0)
 		{
 			free(path_tab);
@@ -65,34 +70,8 @@ char	*get_path(char *cmd, char **env)
 	return (NULL);
 }
 
-/*int	check_cmd(char *cmd)
-{
-	//size_t		i;
-
-	//i = 0;
-	if (!cmd)
-		return (-1);
-	while (cmd[i] && cmd[i] == '/')
-		i++;
-	//dprintf (2, "%ld, %s\n", i, cmd);
-	if (i == ft_strlen(cmd))
-		return (1);
-	else if (cmd[ft_strlen(cmd) - 1] == '/')
-		return (1);
-	if (ft_strchr(cmd, '/'))
-		return (2);
-
-	while (cmd[i] && ((cmd[i] >= 9 && cmd[i] <= 13) || cmd[i] == ' '))
-		i++;
-	if (i == ft_strlen(cmd))
-		return (0);
-	
-	//return (i);
-}*/
-
 int	print_msg(int i, char *str, char *cmd, char **tab)
 {
-	//dprintf (2, "%d, %s\n", i, cmd);
 	if (i == -1)
 	{
 		str = ft_strjoin(str, cmd);
@@ -119,31 +98,21 @@ int	print_msg(int i, char *str, char *cmd, char **tab)
 int	exec_cmd(char *cmd, char **env, char *path)
 {
 	char	**tab;
-	char	*str;
-	//int		i;
 
 	tab = ft_split(cmd, ' ');
 	if (!tab)
 		return (-1);
-	str = NULL;
 	if (!*cmd)
-		return (print_msg(-1, str, cmd, tab));
+		return (print_msg(-1, NULL, cmd, tab));
 	else if (access(cmd, F_OK | X_OK) == 0)
 		execve(cmd, tab, env);
 	if (access(cmd, F_OK | X_OK) == 0)
-		return (print_msg(1, str, cmd, tab));
-	//i = check_cmd(cmd);		
-
+		return (print_msg(1, NULL, cmd, tab));
 	if (ft_strchr(cmd, '/'))
-		return (print_msg(2, str, cmd, tab));
-	/*if (i)
-		return (print_msg(i, str, cmd, tab));*/
+		return (print_msg(2, NULL, cmd, tab));
 	path = get_path(cmd, env);
-	
 	if (!path)
-		return (print_msg(-1, str, cmd, tab));
-	/*if (i)
-		return (print_msg(i, str, cmd, tab));*/
+		return (print_msg(-1, NULL, cmd, tab));
 	execve(path, tab, env);
 	perror("execve() failed");
 	free_tab(tab);
